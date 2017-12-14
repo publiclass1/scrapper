@@ -8,11 +8,6 @@ const extranContents = require('../helpers/extract-contents')
 router.post('/', function (req, res, next) {
   const schema = req.body.schema || {}
   const url = req.body.url
-  const pagination = req.body.pagination || {
-    nextLink: {
-      selector: ''
-    }
-  }
 
   if (!url) {
     return next(new Error('Invalid url'))

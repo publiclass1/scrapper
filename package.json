@@ -1,0 +1,27 @@
+{
+  "name": "amz-crawler",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "start.local": "NODE_ENV=development nodemon ./bin/www",
+    "test": "mocha 'tests/**/*.spec.js'"
+  },
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "fs-path": "^0.0.23",
+    "jade": "~1.11.0",
+    "lodash": "^4.17.4",
+    "morgan": "~1.9.0",
+    "node-scrapy": "^0.3.1",
+    "serve-favicon": "~2.4.5",
+    "tough-cookie-filestore": "^0.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "nodemon": "^1.12.6"
+  }
+}

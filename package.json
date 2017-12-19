@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "start.local": "NODE_ENV=development nodemon ./bin/www",
+    "start.local": "PORT=3333 NODE_ENV=development nodemon ./bin/www",
     "test": "mocha 'tests/**/*.spec.js'"
   },
   "dependencies": {

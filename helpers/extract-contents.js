@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const $ = require('cheerio')
 
-function getWithSelectorOptions($el, schema, _return) {
+function getWithSelectorOptions($el, schema) {
 
   let val = null
 
@@ -17,6 +17,14 @@ function getWithSelectorOptions($el, schema, _return) {
   //   '\nhow', how,
   //   '\nhtml', $el.html(),
   //   '\nvalue:', $(selector, $el)[how](...params))
+  const getVal = (el, how, params) => {
+    if (!_.isUndefined(el[how])) {
+      return el[how](...params)
+    }
+    return null
+  }
+
+  //for single inner element on single selector object
   let innerElement = $el
   if (selector) {
     innerElement = _.isFunction($el)
@@ -24,16 +32,14 @@ function getWithSelectorOptions($el, schema, _return) {
       : $(selector, $el)
   }
 
-  if (!_.isUndefined(innerElement[how])) {
-    val = innerElement[how](...params)
-  }
-  return val
+  return getVal(innerElement, how, params)
 }
 
 function recursiveSelectValue($el, schema, _return = {}) {
 
   for (let key in schema) {
     const val = schema[key]
+
     //pagination
     if (_.has(val, 'listItems')) {
       const _listItems = []
@@ -50,6 +56,19 @@ function recursiveSelectValue($el, schema, _return = {}) {
         })
       }
       _return[key] = _listItems
+      continue
+    }
+
+    if (_.isArray(val)) {
+      let _val = null
+      for (let _idx in val) {
+        const subSchema = val[_idx]
+        _val = getWithSelectorOptions($el, subSchema)
+        if (_val) {
+          break;
+        }
+      }
+      _return[key] = _val
       continue
     }
 

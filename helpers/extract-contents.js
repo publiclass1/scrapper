@@ -42,9 +42,22 @@ function recursiveSelectValue($el, schema, _return = {}) {
 
     //pagination
     if (_.has(val, 'listItems')) {
-      const _listItems = []
-      const listItemsSelector = _.isString(val.listItems) ? val.listItems : val.listItems.selector
-      const listItems = _.isFunction($el) ? $el(listItemsSelector) : $(listItemsSelector, $el)
+      const _listItems = [];
+      let listItems = [];
+      let listItemsSelector = val.listItems.selector;
+
+      if (!_.isArray(val.listItems.selector)) {
+        listItemsSelector = [val.listItems.selector];
+      }
+      listItemsSelector.forEach(_lis => {
+        const listOfItems = _.isFunction($el) ? $el(_lis) : $(_lis, $el);
+        if (listOfItems.length > 0) {
+          listItems = listOfItems;
+          return false
+        }
+      })
+
+
       const listItemSchema = val.listItems.data
 
       if (listItems.length > 0) {

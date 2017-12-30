@@ -1,5 +1,11 @@
 # Online Scraper
 
+# How to Run 
+`AGENT_INDEX` = The agent index of the phantomjs user agent.
+
+```sh
+$ NODE_ENV=production AGENT_INDEX=0 node bin/www
+```
 
 ## Sample POST request to the server
 `POST /api/crawler`

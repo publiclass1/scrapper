@@ -4,7 +4,7 @@ var webpage = require('webpage'),
 
 var system = require('system');
 var env = system.env;
-var AGENT_INDEX = env.AGENT_INDEX;
+var AGENT_INDEX = env.AGENT_INDEX && parseInt(env.AGENT_INDEX);
 var cookieJarFilePath = (env.COOKIE_DIR || fs.workingDirectory) + '/cookies.json';
 var Utils = {
 

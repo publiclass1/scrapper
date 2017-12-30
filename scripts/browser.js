@@ -4,7 +4,7 @@ var webpage = require('webpage'),
 
 var system = require('system');
 var env = system.env;
-
+var AGENT_INDEX = env.AGENT_INDEX;
 var cookieJarFilePath = (env.COOKIE_DIR || fs.workingDirectory) + '/cookies.json';
 var Utils = {
 
@@ -73,6 +73,7 @@ function getUserAgent() {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.3.5 (KHTML, like Gecko) Version/11.0.1 Safari/604.3.5'
   ]
 
+  if (AGENT_INDEX && AGENT_INDEX >= 0 && AGENT_INDEX < agents.length) return agents[AGENT_INDEX];
   return agents[randomIntFromInterval(0, agents.length - 1)]
 }
 

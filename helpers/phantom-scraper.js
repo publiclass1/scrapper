@@ -2,10 +2,16 @@ const exec = require('child_process').exec
 const script = require.resolve(__dirname + '/../scripts/browser.js')
 const cheerio = require('cheerio')
 const fs = require('fs')
+const AGENT_INDEX = process.env.AGENT_INDEX;
 
 module.exports = (url) => {
   return new Promise((resolve, reject) => {
-    const cmd = 'url="' + url + '" phantomjs ' + script
+    let cmd = " url="' + url + '" phantomjs ' + script
+    
+    if (AGENT_INDEX){
+      cmd = 'AGENT_INDEX="'+ AGENT_INDEX +'" '+ cmd;
+    }
+
     console.log('cmd', cmd)
     exec(cmd, {
       maxBuffer: 1024 * 1024 * 10

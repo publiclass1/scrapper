@@ -6,7 +6,7 @@ const AGENT_INDEX = process.env.AGENT_INDEX;
 
 module.exports = (url) => {
   return new Promise((resolve, reject) => {
-    let cmd = " url="' + url + '" phantomjs ' + script
+    let cmd = '" url="' + url + '" phantomjs ' + script
     
     if (AGENT_INDEX){
       cmd = 'AGENT_INDEX="'+ AGENT_INDEX +'" '+ cmd;

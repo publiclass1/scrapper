@@ -4,8 +4,11 @@ var webpage = require('webpage'),
 
 var system = require('system');
 var env = system.env;
-var AGENT_INDEX = env.AGENT_INDEX && parseInt(env.AGENT_INDEX);
+
+var USER_AGENT = env.USER_AGENT;
 var cookieJarFilePath = (env.COOKIE_DIR || fs.workingDirectory) + '/cookies.json';
+phantom.cookiesEnabled = true;
+
 var Utils = {
 
   readCookiesFromFile: function () {
@@ -47,40 +50,13 @@ var Utils = {
   },
 }
 
-function randomIntFromInterval(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function getUserAgent() {
-  var agents = [
-    'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-    'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
-    'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10; rv:33.0) Gecko/20100101 Firefox/33.0',
-    'Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/31.0',
-    'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20130401 Firefox/31.0',
-    'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0',
-    'Mozilla/5.0 (X11; Linux) KHTML/4.9.1 (like Gecko) Konqueror/4.9',
-    'Mozilla/5.0 (X11; Linux 3.5.4-1-ARCH i686; es) KHTML/4.9.1 (like Gecko) Konqueror/4.9',
-    'Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16',
-    'Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14',
-    'Mozilla/5.0 (Windows NT 6.0; rv:2.0) Gecko/20100101 Firefox/4.0 Opera 12.14',
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/59.0.3071.109 Chrome/59.0.3071.109 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.3.5 (KHTML, like Gecko) Version/11.0.1 Safari/604.3.5'
-  ]
-
-  if (AGENT_INDEX && AGENT_INDEX >= 0 && AGENT_INDEX < agents.length) return agents[AGENT_INDEX];
-  return agents[randomIntFromInterval(0, agents.length - 1)]
-}
-
 function PhantomBrowser() {
   this.page = webpage.create();
-  this.page.settings.userAgent = getUserAgent()
+  this.page.settings.userAgent = USER_AGENT;
   this.page.settings.javascriptEnabled = true;
   this.page.settings.loadImages = false;
+  this.page.settings.resourceTimeout = 15000;
+
   this.loadInProgress = false;
   this.queue = [];
   this.forceWait = false;
@@ -131,14 +107,14 @@ PhantomBrowser.prototype.executeQueue = function (callback) {
   };
 
   checkBack(function () {
-    Utils.writeCookiesToFile();
+
 
     callback();
   });
 }
 
 //read cookies before to start
-Utils.readCookiesFromFile();
+// Utils.readCookiesFromFile();
 var url = env.url
 var browser = new PhantomBrowser();
 var html = null
@@ -147,12 +123,15 @@ browser.queue = [
     browser.page.open(url)
   },
   function () {
+    // browser.page.render('page.png')
     html = browser.page.evaluate(function () {
       return document.querySelector('html').outerHTML
     })
   }
 ]
 browser.executeQueue(function () {
-  console.log(html)
+  //Utils.writeCookiesToFile();
+  console.log(html);
+
   phantom.exit(0)
 })

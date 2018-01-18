@@ -31,3 +31,4 @@ node_modules
 npm-debug.log
 cookies.json
 amz.err
+.ug

@@ -2,25 +2,58 @@ const express = require('express');
 const router = express.Router();
 const _ = require('lodash')
 const scraper = require('../helpers/phantom-scraper')
-const extranContents = require('../helpers/extract-contents')
+const extractContents = require('../helpers/extract-contents')
 const fs = require('fs');
+const path = require('path');
+const userAgentHelper = require('../helpers/user-agent');
 
 /* GET crawler listing. */
 router.post('/', function (req, res, next) {
   const schema = req.body.schema || {}
-  const url = req.body.url
+  const url = req.body.url;
+
 
   if (!url) {
     return next(new Error('Invalid url'))
   }
 
-  fs.exists(__dirname + '/../amz.err', function (err) {
-    if (err) {
-      res.status(500).send('Something went wrong!')
-    } else {
-      scraper(url)
+  const errFilename = __dirname + '/../amz.err';
+  const cookieFilename = __dirname + '/../cookies.json';
+  let hasError = false;
+
+  fs.exists(errFilename, function (exist) {
+    if (exist) {
+      // try to make a new set agent
+      // remove cookies.json
+      console.log('Removing \n', errFilename,
+        '\n', cookieFilename)
+
+      if (fs.existsSync(path.resolve(errFilename)))
+        fs.unlinkSync(path.resolve(errFilename));
+
+      // console.log('fs.existsSync(cookieFilename)', fs.existsSync(cookieFilename))
+      if (fs.existsSync(path.resolve(cookieFilename)))
+        fs.unlinkSync(path.resolve(cookieFilename));
+      // res.status(500)
+      //   .send('Something went wrong!')
+      hasError = true;
+    }
+
+    // return res.status(500).send('ff');
+    userAgentHelper(hasError, (err, agent) => {
+      if (err) {
+        return res.status(500)
+          .send('Something went wrong!')
+      }
+      if (!agent) {
+        return res.status(501)
+          .send('Agent is required');
+      }
+      console.log('New UserAgent', agent);
+
+      scraper(url, agent)
         .then($ => {
-          return extranContents($, schema)
+          return extractContents($, schema)
         }).then(data => {
           res.json({
             url: url,
@@ -29,7 +62,8 @@ router.post('/', function (req, res, next) {
         }).catch(e => {
           next(e)
         });
-    }
+    });
+
   })
 
 });

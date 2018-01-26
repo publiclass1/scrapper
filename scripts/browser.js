@@ -114,7 +114,7 @@ PhantomBrowser.prototype.executeQueue = function (callback) {
 }
 
 //read cookies before to start
-// Utils.readCookiesFromFile();
+Utils.readCookiesFromFile();
 var url = env.url
 var browser = new PhantomBrowser();
 var html = null
@@ -130,7 +130,7 @@ browser.queue = [
   }
 ]
 browser.executeQueue(function () {
-  //Utils.writeCookiesToFile();
+  Utils.writeCookiesToFile();
   console.log(html);
 
   phantom.exit(0)

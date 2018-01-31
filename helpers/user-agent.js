@@ -58,24 +58,41 @@ function getNewAgent(hasError, callback) {
 
       let index = parseInt(data);
       let agent = null;
+      console.log('default index', index, 'hasError', hasError);
+
       if (hasError) {
         // lets try another user agent.
         index += 1;
-        saveAgentIndex(index, () => { });
+        if (index > totalAgents - 1) {
+          index = randomIntFromInterval(0, totalAgents - 1);
+        }
+        agent = agents[index];
+        return saveAgentIndex(index, (errSaveAgentIndex) => {
+          if (errSaveAgentIndex) {
+            console.error('Error on saving new index for agent', errSaveAgentIndex);
+          } else {
+            console.log('New agent indexed', index);
+            callback(null, agent);
+          }
+        });
       }
 
       if (index > totalAgents - 1) {
         const randomIndex = randomIntFromInterval(0, totalAgents - 1);
         agent = agents[randomIndex];
-        saveAgentIndex(randomIndex, () => { });
+        saveAgentIndex(randomIndex, (errSaveAgentIndex) => {
+          if (errSaveAgentIndex) {
+            console.error('Error on saving new index for agent', errSaveAgentIndex);
+          } else {
+            console.log('New agent indexed', index);
+            callback(null, agent);
+          }
+        });
       } else {
-        agent = agents[index]
+        agent = agents[index];
+        callback(null, agent);
       }
 
-      callback(
-        null,
-        agent
-      )
     })
   });
 }

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path')
 
 var agents = [
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
@@ -28,9 +29,10 @@ function randomIntFromInterval(min, max) {
 }
 
 const totalAgents = agents.length;
-const fileName = __dirname + '/../.ug';
+const fileName = path.resolve(__dirname + '/../.ug');
 
 function saveAgentIndex(index, callback) {
+  console.log('Saving new useragent index', index);
   fs.writeFile(fileName, index, (err) => {
     if (err) return callback(err);
     callback(null);
@@ -38,8 +40,10 @@ function saveAgentIndex(index, callback) {
 }
 function getNewAgent(hasError, callback) {
   fs.exists(fileName, (exist) => {
+    console.log(fileName, ' is exist?', exist);
 
     if (!exist) {
+      console.log('No useragent file, lets create to index 0')
       const firstAgent = agents[0];
       return saveAgentIndex(0, (err) => {
         if (err) return callback(err);

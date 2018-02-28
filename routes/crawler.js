@@ -17,11 +17,12 @@ router.post('/', function (req, res, next) {
     return next(new Error('Invalid url'))
   }
 
-  const errFilename = __dirname + '/../amz.err';
-  const cookieFilename = __dirname + '/../cookies.json';
+  const errFilename = path.resolve(__dirname + '/../amz.err');
+  const cookieFilename = path.resolve(__dirname + '/../cookies.json');
   let hasError = false;
 
   fs.exists(errFilename, function (exist) {
+    console.log('Is amz error exist', exist);
     if (exist) {
       // try to make a new set agent
       // remove cookies.json

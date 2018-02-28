@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
 
   console.log('Check file error exist');
   fs.exists(errFilename, (exist) => {
-    console.log('Error exist?', exists);
+    console.log('Error exist?', exist);
 
     if (exist) {
       console.log('sleepTime is null', sleepTime);

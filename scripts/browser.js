@@ -115,12 +115,31 @@ PhantomBrowser.prototype.executeQueue = function (callback) {
 
 //read cookies before to start
 Utils.readCookiesFromFile();
-var url = env.url
+var url = env.url;
+var setting = null;
 var browser = new PhantomBrowser();
-var html = null
+var html = null;
+
+if (env.setting) {
+  var _setting = null;
+  try {
+    _setting = atob(env.setting);
+    setting = JSON.parse(_setting);
+  } catch (e) {}
+
+  // console.log(JSON.stringify(setting,null,2));
+  // phantom.exit(0);
+}
+
 browser.queue = [
   function () {
-    browser.page.open(url)
+    if (setting) {
+      // console.log(setting);
+      // phantom.exit(0);
+      browser.page.open(url, setting);
+    } else {
+      browser.page.open(url);
+    }
   },
   function () {
     // browser.page.render('page.png')
@@ -133,5 +152,5 @@ browser.executeQueue(function () {
   Utils.writeCookiesToFile();
   console.log(html);
 
-  phantom.exit(0)
+  phantom.exit(0);
 })

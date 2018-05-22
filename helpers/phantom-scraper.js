@@ -6,13 +6,18 @@ const path = require('path')
 
 const USER_AGENT = process.env.USER_AGENT;
 
-module.exports = (url, myUserAgent) => {
+module.exports = (url, myUserAgent, setting) => {
+  // console.log('SEtting', setting);
   return new Promise((resolve, reject) => {
     let cmd = ' url="' + url
       + '" phantomjs ' + script;
 
     if (USER_AGENT || myUserAgent) {
-      cmd = 'USER_AGENT="' + (USER_AGENT || myUserAgent) + '" ' + cmd;
+      cmd = ' USER_AGENT="' + (USER_AGENT || myUserAgent) + '" ' + cmd;
+    }
+
+    if(setting){
+      cmd = ` setting="${setting}" ${cmd}`;
     }
 
     console.log('cmd', cmd)

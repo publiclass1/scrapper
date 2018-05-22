@@ -11,6 +11,7 @@ const userAgentHelper = require('../helpers/user-agent');
 router.post('/', function (req, res, next) {
   const schema = req.body.schema || {}
   const url = req.body.url;
+  const setting= req.body.setting;
 
 
   if (!url) {
@@ -52,7 +53,7 @@ router.post('/', function (req, res, next) {
       }
       console.log('New UserAgent', agent);
 
-      scraper(url, agent)
+      scraper(url, agent, setting)
         .then($ => {
           return extractContents($, schema)
         }).then(data => {

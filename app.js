@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const index = require('./routes/index');
 const crawler = require('./routes/crawler');
+const crawler2 = require('./routes/crawler-v2');
 const limiterMiddleware = require('./middlewares/crawler');
 const sleepMiddleware = require('./middlewares/sleep-time');
 const app = express();
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', index);
 app.use('/crawler', sleepMiddleware, limiterMiddleware, crawler);
+app.use('/crawler-v2', sleepMiddleware, limiterMiddleware, crawler2);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

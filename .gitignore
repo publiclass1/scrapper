@@ -29,6 +29,6 @@ node_modules
 
 # Debug log from npm
 npm-debug.log
-cookies.json
+*cookies.json
 amz.err
 .ug

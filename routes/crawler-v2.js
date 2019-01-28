@@ -21,11 +21,13 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
   const tmp404 = `${partsUrl.protocol}//${partsUrl.host}/404-not-found`;
   // console.log('tmp404', tmp404)
   const proxy = `http://rmenguito:Proxymesh1!@us-wa.proxymesh.com:31280`;
-  const browser = new ChromeBrowser(null, [
-    // `--proxy-server=${proxy}`
-  ], HEADLESS);
+  const args = [];
+  if(!headless){
+    args.push(proxy);
+  }
+  const browser = new ChromeBrowser(null,args, HEADLESS);
   try {
-    browser.setProxy(proxy);
+    // browser.setProxy(proxy); firefox
     await browser.build();
 
     await browser.loadCookies(tmp404);
@@ -40,7 +42,8 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
     // console.log('data', data);
     res.json({
       url: url,
-      results: data
+      results: data,
+      html
     });
   } catch (e) {
     console.error(e);

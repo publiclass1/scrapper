@@ -1,57 +1,59 @@
+const path = require('path');
+const exec = require('child_process').exec;
 const express = require('express');
 const router = express.Router();
-const _ = require('lodash');
 const cheerio = require('cheerio');
-const _url = require('url');
 const asyncMiddleware = require('../middlewares/asyncMiddleware');
 const extractContents = require('../helpers/extract-contents');
-const ChromeBrowser = require('../scripts/chrome-browser');
 const HEADLESS = !!(process.env.HEAD);
+const script = path.resolve(__dirname + '/../scripts/run-chrome-browser.js');
+
+function asyncExec(cmd, args = {}) {
+  return new Promise((resolve, reject) => {
+    exec(cmd, args, function (e, a) {
+      if (e) return reject(e);
+      if (a) {
+        a = a.trim();
+        a = a.replace(/(\r\n|\n|\r)/gm, "");
+      }
+      resolve(a);
+    });
+  });
+}
+
 /* GET crawler listing. */
 router.post('/', asyncMiddleware(async function (req, res, next) {
   const schema = req.body.schema || {}
   const url = req.body.url;
-  const setting = req.body.setting;
 
   if (!url) {
     return next(new Error('Invalid url'))
   }
-
-  const partsUrl = _url.parse(url);
-  const tmp404 = `${partsUrl.protocol}//${partsUrl.host}/404-not-found`;
-  // console.log('tmp404', tmp404)
-  const proxy = `http://rmenguito:Proxymesh1!@us-wa.proxymesh.com:31280`;
-  const args = [];
-  if(!headless){
-    args.push(proxy);
+  const nodeLocation = await asyncExec('which node');
+  const cmdParts = [
+    `URL="${url}"`,
+    nodeLocation,
+    script
+  ];
+  console.log('HEADLESS',HEADLESS);
+  if (HEADLESS) {
+    cmdParts.unshift(`HEAD=${HEADLESS}`);
   }
-  const browser = new ChromeBrowser(null,args, HEADLESS);
+  const cmd = cmdParts.join(' ');
+  console.log('cmd', cmd);
   try {
-    // browser.setProxy(proxy); firefox
-    await browser.build();
-
-    await browser.loadCookies(tmp404);
-    await browser.open(url);
-    await browser.waitDomReady();
-
-
-    const html = await browser.getHTML();
+    const html = await asyncExec(cmd, {
+      maxBuffer: 1024 * 1024 * 50
+    });
     const $ = cheerio.load(html);
     const data = extractContents($, schema);
-    // console.log('data', html);
-    // console.log('data', data);
     res.json({
       url: url,
-      results: data,
-      html
+      results: data
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).send(e);
-  } finally {
-    await browser.quit();
+    res.status(500).send(err);
   }
-
 }));
 
 module.exports = router;

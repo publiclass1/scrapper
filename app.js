@@ -20,8 +20,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.use('/', index);
-app.use('/crawler', sleepMiddleware, limiterMiddleware, crawler);
-app.use('/crawler-v2', sleepMiddleware, crawler2);
+app.use('/crawler-v1', sleepMiddleware, limiterMiddleware, crawler);
+app.use('/crawler', crawler2);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -1,5 +1,5 @@
 const axios  = require('axios').default;
-
+URL="https://api.ipify.org?format=json" /usr/local/Cellar/node/10.11.0/bin/node /Users/ralphmenguito/Development/JamesWork/james-online-scraper/scripts/run-chrome-browser.js
 const data = {
   url: 'https://api.ipify.org?format=json',
   schema: {
@@ -8,7 +8,7 @@ const data = {
 };
 
 (async ()=> {
-  const rs = await axios.post('http://localhost:3333/crawler-v2',data);
+  const rs = await axios.post('http://localhost:3333/crawler',data);
   console.log(rs.data);
 })();
 

@@ -5,7 +5,7 @@ const _ = require('lodash');
 const chromedriverPath = require('chromedriver').path;
 const chrome = require('selenium-webdriver/chrome');
 const { Builder, By, Key, until, Capabilities } = require('selenium-webdriver');
-
+const log = () => process.env.DEBUG && console.log(...arguments);
 const DEFAULT_COOKIE_PATH = path.resolve(__dirname, '..', 'cb-cookies.json');
 class ChromeBrowser {
 
@@ -13,19 +13,28 @@ class ChromeBrowser {
     this.cookiePath = cookiePath || DEFAULT_COOKIE_PATH;
     this.chromeArgs = args;
     this.options = new chrome.Options();
+    this.isHeadless = !fullbrowser;
+
+    this.options.setUserPreferences(
+      { 'profile': { 'managed_default_content_settings': { 'images': 2 } } });
 
     // if headless lets set the arguments
-    if (!fullbrowser) {
+    if (this.isHeadless) {
+      const width = 1024;
+      const height = 799;
+      
       this.chromeArgs = _.uniq(_.concat(args, [
-        'headless', 'disable-gpu', 'no-sandbox', 'disable-dev-shm-usage','disable-web-security'
+        'headless',
+        `window-size=${width},${height}`,
+        'no-sandbox', 'disable-dev-shm-usage', 'disable-web-security'
       ]));
     }
-    
-    console.log('this.chromeArgs',this.chromeArgs)
+
+    log('this.chromeArgs', this.chromeArgs)
     this.chromeArgs.forEach(arg => this.options.addArguments(arg));
   }
 
-  setProxy(proxy){
+  setProxy(proxy) {
     this.options.setProxy({
       httpProxy: proxy,
       proxyType: "manual"
@@ -48,26 +57,26 @@ class ChromeBrowser {
 
       let allCookies = cookies;
       if (fs.existsSync(this.cookiePath)) {
-        console.log('Loading cookies', this.cookiePath);
+        log('Loading cookies', this.cookiePath);
         const fileData = fs.readFileSync(this.cookiePath, 'utf8');
         try {
           const cookies = JSON.parse(fileData);
           if (_.isArray(cookies)) {
             allCookies = allCookies.concat(cookies);
           }
-          console.log('allCookies length', allCookies && allCookies.length);
+          log('allCookies length', allCookies && allCookies.length);
         } catch (e) { console.error('Parsing cookies error', e); }
       }
 
       for (let i in allCookies) {
         const cookie = allCookies[i];
-        console.log('cookie', cookie);
+        log('cookie', cookie);
         await this.driver.manage().addCookie(cookie);
-        console.log('setting cookie', cookie);
+        log('setting cookie', cookie);
       }
       return true;
     } catch (e) {
-      console.log('Error on setting cookies', e);
+      log('Error on setting cookies', e);
     }
     return false;
   }
@@ -92,6 +101,7 @@ class ChromeBrowser {
 
   async quit() {
     await this.saveCookies();
+    await this.driver.close();
     await this.driver.quit();
   }
 
@@ -164,7 +174,7 @@ class ChromeBrowser {
       );
     } catch (e) {
       console.error(e);
-      console.log('Elements not located');
+      log('Elements not located');
     }
   }
   async refresh() {

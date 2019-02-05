@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   const timeDiff = moment().diff(timeToAccept, 's');
-  const _randomSecond = randomTime(2, 59);
+  const _randomSecond = randomTime(2, 20);
 
   console.log('Time to make a request', (timeDiff), '>', _randomSecond, ((timeDiff) > _randomSecond));
 

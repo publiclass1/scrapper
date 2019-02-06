@@ -7,8 +7,11 @@ const HEADLESS = !!process.env.HEAD;
 
 
 const PROXY_SERVERS = [
-  'us-wa.proxymesh.com:31280',
-  'fr.proxymesh.com:31280'
+  'us-il.proxymesh.com:31280',
+  'us.proxymesh.com:31280',
+  'us-dc.proxymesh.com:31280',
+  'us-ca.proxymesh.com:31280',
+  'us-ny.proxymesh.com:31280'
 ];
 
 function getDomain(host) {

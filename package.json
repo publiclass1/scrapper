@@ -8,8 +8,9 @@
     "test": "mocha 'tests/**/*.spec.js'"
   },
   "dependencies": {
-    "axios": "^0.17.1",
+    "axios": "^0.18.0",
     "body-parser": "~1.18.2",
+    "btoa": "^1.2.1",
     "chromedriver": "^2.45.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",

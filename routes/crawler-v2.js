@@ -7,6 +7,8 @@ const asyncMiddleware = require('../middlewares/asyncMiddleware');
 const extractContents = require('../helpers/extract-contents');
 const HEADLESS = !!(process.env.HEAD);
 const script = path.resolve(__dirname + '/../scripts/run-chrome-browser.js');
+const appMon = require('../lib/appmon/AppMonAgent').init('5c5b9ecf464b3e4c778cba6f');
+
 
 function asyncExec(cmd, args = {}) {
   return new Promise((resolve, reject) => {
@@ -35,7 +37,7 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
     nodeLocation,
     script
   ];
-  console.log('HEADLESS',HEADLESS);
+  console.log('HEADLESS', HEADLESS);
   if (HEADLESS) {
     cmdParts.unshift(`HEAD=${HEADLESS}`);
   }
@@ -46,13 +48,26 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
       maxBuffer: 1024 * 1024 * 50
     });
     const $ = cheerio.load(html);
+    const title = $('title').text().trim();
+    if (
+      title === 'Sorry! Something went wrong!' ||
+      title === 'Robot Check') {
+        await appMon.fatal({
+          type: 'james-online-scraper',
+          data: {
+            title,
+            html
+          }
+        });
+        return res.status(500).send('Amazon blocked. :(');
+    }
     const data = extractContents($, schema);
     res.json({
       url: url,
       results: data
     });
   } catch (e) {
-    res.status(500).send(err);
+    res.status(500).send(e.message);
   }
 }));
 

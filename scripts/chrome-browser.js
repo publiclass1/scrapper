@@ -5,7 +5,7 @@ const _ = require('lodash');
 const chromedriverPath = require('chromedriver').path;
 const chrome = require('selenium-webdriver/chrome');
 const { Builder, By, Key, until, Capabilities } = require('selenium-webdriver');
-const log = () => process.env.DEBUG && console.log(...arguments);
+const log = (...args) => process.env.DEBUG && console.log(...args);
 const DEFAULT_COOKIE_PATH = path.resolve(__dirname, '..', 'cb-cookies.json');
 class ChromeBrowser {
 

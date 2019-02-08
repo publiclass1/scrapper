@@ -4,30 +4,9 @@ const url = require('url');
 const ChromeBrowser = require('./chrome-browser');
 const WEB_URL = process.env.URL;
 const HEADLESS = !!process.env.HEAD;
-const proxyHelper = require('../helpers/proxy');
+const PROXY = process.env.PROXY;
+
 const log = (...args)=> process.env.DEBUG && console.log(...args);
-
-function getDomain(host) {
-  return host && host.split(':').shift();
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-async function getProxyServer() {
-  const PROXY_SERVERS = await proxyHelper.readData();
-  const index = getRandomInt(0, PROXY_SERVERS.length - 1);
-  const proxyServer = PROXY_SERVERS[index];
-  const domainName = getDomain(proxyServer);
-
-  return {
-    proxyServer,
-    domainName
-  }
-}
 
 (async function () {
   
@@ -35,11 +14,10 @@ async function getProxyServer() {
   log('partsUrl',partsUrl);
   const tmp404 = `${partsUrl.protocol}//${partsUrl.host}/404-not-found`;
   log('tmp404', tmp404)
-  const { proxyServer, domainName } = await getProxyServer();
-  const proxy = `http://${proxyServer}`;
-  const cookiePath = null;// path.resolve(__dirname, '..', `${domainName}-cookies.json`);
+  
+  // const cookiePath = null;// path.resolve(__dirname, '..', `${domainName}-cookies.json`);
   const args = [
-    'proxy-server=' + proxy
+    'proxy-server=' + PROXY
   ];
 
   log('Proxy arguments', args);

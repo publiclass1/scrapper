@@ -89,7 +89,7 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
   const proxy = `http://${proxyServer}`;
   const nodeLocation = await asyncExec('which node');
   const cmdParts = [
-    `PROXY=${proxy}`,
+    `PROXY="${proxy}"`,
     `URL="${url}"`,
     nodeLocation,
     script

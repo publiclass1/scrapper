@@ -9,6 +9,8 @@ const crawler = require('./routes/crawler');
 const crawler2 = require('./routes/crawler-v2');
 const limiterMiddleware = require('./middlewares/crawler');
 const sleepMiddleware = require('./middlewares/sleep-time');
+const logCounter = require('./middlewares/logCounter');
+const asyncMiddleware = require('./middlewares/asyncMiddleware');
 const app = express();
 
 
@@ -21,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', index);
 app.use('/crawler-v1', sleepMiddleware, limiterMiddleware, crawler);
-app.use('/crawler', crawler2);
+app.use('/crawler', asyncMiddleware(logCounter),crawler2);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

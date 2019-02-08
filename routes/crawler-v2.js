@@ -85,7 +85,9 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
     });
     $ = cheerio.load(html);
     const title = $('title').text().trim();
+    console.log('Title', title);
     if (
+      !title ||
       title === 'Sorry! Something went wrong!' ||
       title === 'Robot Check') {
       retry += 1;

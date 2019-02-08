@@ -9,10 +9,34 @@ const HEADLESS = !!(process.env.HEAD);
 const script = path.resolve(__dirname + '/../scripts/run-chrome-browser.js');
 const appMon = require('../lib/appmon/AppMonAgent').init('5c5b9ecf464b3e4c778cba6f');
 const proxyHelper = require('../helpers/proxy');
+const fs = require('fs');
+const moment = require('moment');
 
-async function sleep(seconds){
-  return new Promise(r=> {
-    setTimeout(()=> r(), seconds * 1000);
+async function countRequest() {
+  return new Promise(resolve => {
+    const currentDate = moment().format('YMMDD');
+    const location = path.resolve(__dirname, '..', `request.log`);
+    if (fs.existsSync(location)) {
+      try {
+        const content = fs.readFileSync(location, 'utf8');
+        const data = JSON.parse(content);
+        data[currentDate] = data[currentDate] || 1;
+
+        fs.writeFileSync(location, JSON.stringify(data));
+      } catch (e) { }
+      resolve();
+    } else {
+      const data = {};
+      data[currentDate] = 1;
+      fs.writeFileSync(location, JSON.stringify(data));
+      resolve();
+    }
+  });
+}
+
+async function sleep(seconds) {
+  return new Promise(r => {
+    setTimeout(() => r(), seconds * 1000);
   })
 }
 function getDomain(host) {
@@ -59,6 +83,8 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
   if (!url) {
     return next(new Error('Invalid url'))
   }
+  await countRequest();
+
   const { proxyServer } = await getProxyServer();
   const proxy = `http://${proxyServer}`;
   const nodeLocation = await asyncExec('which node');
@@ -92,7 +118,7 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
       title === 'Robot Check') {
       retry += 1;
       await sleep(1);
-    }else{
+    } else {
       break;
     }
   } while (retry < retryCount);

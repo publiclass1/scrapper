@@ -22,7 +22,7 @@ const log = (...args)=> process.env.DEBUG && console.log(...args);
 
   log('Proxy arguments', args);
   
-  const browser = new ChromeBrowser(cookiePath, args, HEADLESS);
+  const browser = new ChromeBrowser(null, args, HEADLESS);
 
   try {
     // browser.setProxy(proxy); firefox

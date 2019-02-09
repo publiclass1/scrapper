@@ -74,7 +74,7 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
     cmdParts.unshift(`HEAD=${HEADLESS}`);
   }
   const cmd = cmdParts.join(' ');
-  const retryCount = 60;
+  const retryCount = 5;
   let retry = 0;
   let html;
   let $;

@@ -80,7 +80,7 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
   let $;
   console.log('cmd', cmd);
 
-  do {
+  try {
     html = await asyncExec(cmd, {
       maxBuffer: 1024 * 1024 * 50
     });
@@ -91,28 +91,11 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
       !title ||
       title === 'Sorry! Something went wrong!' ||
       title === 'Robot Check') {
-      retry += 1;
-      await sleep(1);
+      return res.status(500).send('Amazon blocked. :(');
     } else {
       break;
     }
-  } while (retry < retryCount);
 
-  try {
-    const title = $('title').text().trim();
-    if (
-      title === 'Sorry! Something went wrong!' ||
-      title === 'Robot Check') {
-      await appMon.fatal({
-        type: 'james-online-scraper',
-        data: {
-          proxy,
-          title,
-          html
-        }
-      });
-      return res.status(500).send('Amazon blocked. :(');
-    }
     const data = extractContents($, schema);
     res.json({
       url: url,

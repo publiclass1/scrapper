@@ -74,8 +74,6 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
     cmdParts.unshift(`HEAD=${HEADLESS}`);
   }
   const cmd = cmdParts.join(' ');
-  const retryCount = 5;
-  let retry = 0;
   let html;
   let $;
   console.log('cmd', cmd);
@@ -91,11 +89,10 @@ router.post('/', asyncMiddleware(async function (req, res, next) {
       !title ||
       title === 'Sorry! Something went wrong!' ||
       title === 'Robot Check') {
-      return res.status(500).send('Amazon blocked. :(');
-    } else {
-      break;
+      return res.status(500).json({
+        code: 'AMAZON_BLOCKED'
+      });
     }
-
     const data = extractContents($, schema);
     res.json({
       url: url,

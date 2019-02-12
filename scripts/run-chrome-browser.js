@@ -15,19 +15,19 @@ const log = (...args)=> process.env.DEBUG && console.log(...args);
   const tmp404 = `${partsUrl.protocol}//${partsUrl.host}/404-not-found`;
   log('tmp404', tmp404)
   
-  // const cookiePath = null;// path.resolve(__dirname, '..', `${domainName}-cookies.json`);
+  const cookiePath = null;// path.resolve(__dirname, '..', `${domainName}-cookies.json`);
   const args = [
     'proxy-server=' + PROXY
   ];
 
   log('Proxy arguments', args);
   
-  const browser = new ChromeBrowser(null, args, HEADLESS);
+  const browser = new ChromeBrowser(cookiePath, args, HEADLESS);
 
   try {
     // browser.setProxy(proxy); firefox
     await browser.build();
-    // await browser.loadCookies(tmp404);
+    await browser.loadCookies(tmp404);
     await browser.open(WEB_URL);
     await browser.waitDomReady();
     const html = await browser.getHTML();

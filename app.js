@@ -22,6 +22,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.use('/', index);
+app.use('/test', (req,res)=>{
+  res.status(500).json({
+    code: 'ab'
+  })
+});
 app.use('/crawler-v1', sleepMiddleware, limiterMiddleware, crawler);
 app.use('/crawler', limiterMiddleware, asyncMiddleware(logCounter),crawler2);
 

@@ -4,7 +4,7 @@
 `AGENT_INDEX` = The agent index of the phantomjs user agent.
 
 ```sh
-$ NODE_ENV=production AGENT_INDEX=0 node bin/www
+$ NODE_ENV=production node bin/www
 ```
 
 ## Sample POST request to the server
